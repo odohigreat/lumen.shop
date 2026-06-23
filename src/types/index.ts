@@ -36,3 +36,21 @@ export interface OrderPayload {
     zipCode: string;
   };
 }
+
+export interface Collection {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  featuredProductIds: string[];
+}
+
+export interface JournalArticle {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  image: string;
+  date: string;
+  author: string;
+}

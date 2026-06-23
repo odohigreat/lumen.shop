@@ -1,12 +1,15 @@
+import { Link } from 'react-router-dom';
+
 export function Footer() {
   return (
     <footer className="border-t border-border bg-surface py-12 md:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <a href="/" className="text-2xl font-serif font-bold tracking-tighter block mb-4">
-              LUMEN
-            </a>
+            <Link to="/" className="flex items-center gap-2 mb-4 group">
+              <img src="/images/logo.png" alt="Lumen Logo" className="h-8 w-8 object-contain" />
+              <span className="text-2xl font-serif font-bold tracking-tighter block">LUMEN</span>
+            </Link>
             <p className="text-sm text-muted max-w-sm text-balance">
               Redefining boutique minimalism. Thoughtfully curated essentials for the modern lifestyle.
             </p>

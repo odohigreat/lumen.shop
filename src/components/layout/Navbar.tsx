@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { ShoppingBag, Search, Menu } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 import { useUIStore } from '../../store/useUIStore';
@@ -13,16 +14,17 @@ export function Navbar() {
           <button className="p-2 text-primary hover:text-muted transition-colors md:hidden">
             <Menu className="h-6 w-6" />
           </button>
-          <a href="/" className="text-xl font-serif font-bold tracking-tighter">
-            LUMEN
-          </a>
+          <Link to="/" className="flex items-center gap-2 group">
+            <img src="/images/logo.png" alt="Lumen Logo" className="h-6 w-6 object-contain" />
+            <span className="text-xl font-serif font-bold tracking-tighter">LUMEN</span>
+          </Link>
         </div>
         
         <nav className="hidden md:flex gap-8">
-          <a href="#" className="text-sm font-medium hover:text-muted transition-colors">Shop All</a>
-          <a href="#" className="text-sm font-medium hover:text-muted transition-colors">New Arrivals</a>
-          <a href="#" className="text-sm font-medium hover:text-muted transition-colors">Collections</a>
-          <a href="#" className="text-sm font-medium hover:text-muted transition-colors">Journal</a>
+          <Link to="/shop" className="text-sm font-medium hover:text-muted transition-colors">Shop All</Link>
+          <Link to="/shop" className="text-sm font-medium hover:text-muted transition-colors">New Arrivals</Link>
+          <Link to="/shop" className="text-sm font-medium hover:text-muted transition-colors">Collections</Link>
+          <Link to="/journal" className="text-sm font-medium hover:text-muted transition-colors">Journal</Link>
         </nav>
 
         <div className="flex items-center gap-4">
