@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
+import { ScrollToTop } from './components/layout/ScrollToTop';
 
 // Strict Lazy Loading for pages and heavy components
 const Home = React.lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -21,6 +22,7 @@ const CheckoutModal = React.lazy(() => import('./components/checkout/CheckoutMod
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Layout>
         <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
           <Routes>
