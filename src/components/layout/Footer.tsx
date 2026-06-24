@@ -17,17 +17,17 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 tracking-wide text-sm">SUPPORT</h4>
             <ul className="space-y-3 text-sm text-muted">
-              <li><a href="#" className="hover:text-primary transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Shipping & Returns</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Contact Us</a></li>
+              <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/shipping-returns" className="hover:text-primary transition-colors">Shipping & Returns</Link></li>
+              <li><Link to="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-4 tracking-wide text-sm">COMPANY</h4>
             <ul className="space-y-3 text-sm text-muted">
-              <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Sustainability</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Terms & Privacy</a></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">Our Story</Link></li>
+              <li><Link to="/sustainability" className="hover:text-primary transition-colors">Sustainability</Link></li>
+              <li><Link to="/legal" className="hover:text-primary transition-colors">Legal</Link></li>
             </ul>
           </div>
         </div>
