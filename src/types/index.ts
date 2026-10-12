@@ -8,6 +8,7 @@ export interface Product {
   variants: Variant[];
 }
 
+// Inventory belongs to a specific color/size combination, not the whole product.
 export interface Variant {
   id: string;
   color: string;
@@ -16,25 +17,12 @@ export interface Variant {
   inventory: number;
 }
 
+// The line ID combines product and variant IDs; quantity is validated by the store.
 export interface CartItem {
   id: string;
   product: Product;
   variant: Variant;
   quantity: number;
-}
-
-export interface OrderPayload {
-  items: CartItem[];
-  total: number;
-  customerInfo: {
-    email: string;
-    firstName: string;
-    lastName: string;
-    address: string;
-    city: string;
-    country: string;
-    zipCode: string;
-  };
 }
 
 export interface Collection {

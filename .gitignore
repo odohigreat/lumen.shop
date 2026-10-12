@@ -22,3 +22,23 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local credentials and deployment metadata
+.env
+.env.*
+!.env.example
+.vercel/
+.aws/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Generated checks and machine-specific caches
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Internal technical audits stay outside public staging.
+/LUMEN_PHASE_*_*.md

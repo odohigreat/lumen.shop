@@ -1,0 +1,17 @@
+flowchart TB
+  Hosting[Vercel hosting target: static build + SPA rewrite] --> UI[React interface + React Router]
+  Images[Unsplash remote editorial images] --> UI
+  subgraph Browser[Browser-local application]
+    UI --> Variants[ProductInfo: exact color/size selection]
+    Catalog[Typed local catalog] --> Variants
+    Catalog --> Cart[Zustand cart: stock caps + derived totals]
+    Variants --> Cart
+    UI --> UIState[Zustand UI state: cart visibility]
+    Cart <--> Storage[localStorage: guarded persist + reconciliation]
+    UIState --> CartView[CartSidebar overlay]
+    CartView -->|open-checkout event| Checkout[CheckoutModal: local steps and form state]
+    Cart --> Checkout
+    Checkout --> Zod[Zod: validation + inferred delivery type]
+    Zod -->|valid details| Result[Review and completion preview]
+  end
+  Boundary[No commerce API, database, payment, authentication or email delivery]

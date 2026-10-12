@@ -1,42 +1,43 @@
 export function Legal() {
   return (
-    <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto fade-in">
-      <h1 className="text-4xl font-serif mb-12">Legal Information</h1>
-      
-      <div className="space-y-12">
+    <div className="px-4 py-16 sm:px-6 lg:px-8 max-w-3xl mx-auto">
+      <h1 className="text-4xl font-serif mb-12">Privacy & Demo Information</h1>
+      <div className="space-y-10 text-muted leading-relaxed">
         <section>
-          <h2 className="text-2xl font-serif mb-4 pb-2 border-b border-border">Privacy Policy</h2>
-          <div className="text-muted text-sm space-y-4 leading-relaxed">
-            <p>Last updated: October 2023</p>
-            <p>
-              Lumen Studio ("we", "our", or "us") respects your privacy and is committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website and tell you about your privacy rights.
-            </p>
-            <h3 className="font-medium text-primary text-base mt-6 mb-2">1. The Data We Collect</h3>
-            <p>
-              We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows: Identity Data, Contact Data, Financial Data, Transaction Data, and Technical Data.
-            </p>
-            <h3 className="font-medium text-primary text-base mt-6 mb-2">2. How We Use Your Data</h3>
-            <p>
-              We will only use your personal data when the law allows us to. Most commonly, we will use your personal data to perform the contract we are about to enter into or have entered into with you, or where it is necessary for our legitimate interests.
-            </p>
-          </div>
+          <h2 className="text-2xl font-serif text-primary mb-4">Information in your browser</h2>
+          <p>
+            The cart stores product selections and quantities in local storage so they remain
+            available after a reload. Checkout delivery details stay in page memory and are
+            discarded when you close the preview.
+          </p>
+          <p className="mt-4">
+            Contact and newsletter entries are not sent to a server or saved by this demonstration.
+            No payment information is requested.
+          </p>
         </section>
-
         <section>
-          <h2 className="text-2xl font-serif mb-4 pb-2 border-b border-border">Terms of Service</h2>
-          <div className="text-muted text-sm space-y-4 leading-relaxed">
-            <p>
-              These Terms of Service govern your use of our website and services. By accessing or using our website, you agree to be bound by these Terms.
-            </p>
-            <h3 className="font-medium text-primary text-base mt-6 mb-2">1. Use of Our Site</h3>
-            <p>
-              You may use our site only for lawful purposes. You may not use our site in any way that breaches any applicable local, national, or international law or regulation.
-            </p>
-            <h3 className="font-medium text-primary text-base mt-6 mb-2">2. Intellectual Property Rights</h3>
-            <p>
-              We are the owner or the licensee of all intellectual property rights in our site, and in the material published on it. Those works are protected by copyright laws and treaties around the world. All such rights are reserved.
-            </p>
-          </div>
+          <h2 className="text-2xl font-serif text-primary mb-4">External imagery</h2>
+          <p>
+            Selected editorial images load from Unsplash. Your browser makes requests to that
+            service to display them. Product images, the homepage hero, and the font are served with
+            this application.
+          </p>
+        </section>
+        <section>
+          <h2 className="text-2xl font-serif text-primary mb-4">Managing your cart</h2>
+          <p>
+            Remove items using the cart controls, or clear this site's storage in your browser
+            settings to delete saved selections. Cart data is specific to the browser and is not
+            linked to an account.
+          </p>
+        </section>
+        <section>
+          <h2 className="text-2xl font-serif text-primary mb-4">Demonstration scope</h2>
+          <p>
+            LUMEN is a frontend storefront demonstration. Products and delivery policies are
+            illustrative. Checkout does not create an order, arrange a delivery, or process a
+            payment.
+          </p>
         </section>
       </div>
     </div>

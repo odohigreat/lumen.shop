@@ -4,13 +4,14 @@ export function About() {
       <div className="text-center mb-16">
         <h1 className="text-4xl font-serif mb-6">Our Story</h1>
         <p className="text-lg text-muted text-balance">
-          Lumen was born from a desire to strip away the unnecessary and focus on what truly matters: quality, intention, and timeless design.
+          Lumen was born from a desire to strip away the unnecessary and focus on what truly
+          matters: quality, intention, and timeless design.
         </p>
       </div>
 
       <div className="mb-16 aspect-video overflow-hidden bg-secondary">
-        <img 
-          src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600&auto=format&fit=crop" 
+        <img
+          src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600&auto=format&fit=crop"
           alt="Lumen Studio"
           className="object-cover w-full h-full"
         />
@@ -20,19 +21,24 @@ export function About() {
         <div>
           <h2 className="text-2xl font-serif text-primary mb-4">Philosophy</h2>
           <p className="mb-4">
-            We believe that less, but better, is the key to a harmonious life. Our collections are designed not to chase trends, but to provide a foundation of enduring pieces that evolve with you.
+            We believe that less, but better, is the key to a harmonious life. Our collections are
+            designed not to chase trends, but to provide a foundation of enduring pieces that evolve
+            with you.
           </p>
           <p>
-            Every silhouette, material, and detail is meticulously considered to ensure an outcome that feels effortless yet profoundly intentional.
+            Every silhouette, material, and detail is meticulously considered to ensure an outcome
+            that feels effortless yet profoundly intentional.
           </p>
         </div>
         <div>
           <h2 className="text-2xl font-serif text-primary mb-4">Craftsmanship</h2>
           <p className="mb-4">
-            We partner with independent artisans and heritage mills across Europe and Asia, selecting only those who share our uncompromising commitment to ethical production and peerless quality.
+            Lumen is a demonstration of a considered boutique shopping experience, bringing together
+            product discovery, variant selection, and a clear checkout preview.
           </p>
           <p>
-            By producing in limited, mindful batches, we eliminate waste and ensure that every piece that leaves our studio meets our exacting standards.
+            The collection and brand story illustrate the experience. No factory partnerships or
+            production claims are verified by this demonstration.
           </p>
         </div>
       </div>
