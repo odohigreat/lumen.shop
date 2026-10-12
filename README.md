@@ -1,74 +1,199 @@
-# React + TypeScript + Vite
+# LUMEN — Modern E-commerce Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+LUMEN is a custom React/TypeScript storefront demonstrating product discovery, exact variant selection, a recoverable shopping cart and a validated checkout preview. It presents a boutique shopping experience built around a small, typed fashion catalogue.
 
-Currently, two official plugins are available:
+[Live application](https://lumen-shop-eta.vercel.app/) · [GitHub repository](https://github.com/odohigreat/lumen.shop) · [Code evidence](technical/lumen/CODE_EVIDENCE_GUIDE.md)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The public demo is available, but parity with the latest local source has not been verified.
 
-## React Compiler
+## 1. Project Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Shoppers can browse four demonstration products, explore collections and journal content, select available colours/sizes and review a cart before entering delivery details. Support and policy pages complete the storefront experience.
 
-## Expanding the ESLint configuration
+This is a frontend demonstration. Catalogue prices and inventories are fixed local data. Checkout, contact and newsletter forms provide preview feedback; they do not process transactions or submit customer information to commerce services. No login is required.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 2. Key Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Product browsing with search, category filters and sorting stored in shareable URL parameters.
+- Exact colour/size matching, unavailable options and variant-specific quantity limits.
+- Zustand cart with separate variant lines, derived totals and reload persistence.
+- Catalogue-aware cart restoration, visible storage failure notices and retry controls.
+- Delivery → review → completion checkout preview with Zod validation and editable details.
+- Responsive navigation, reusable dialogs, keyboard focus handling and render-error recovery.
+- Lazy secondary routes and overlays, focused motion features and responsive image delivery.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 3. Technology Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Versions are resolved from [package-lock.json](package-lock.json), not inferred from dependency ranges.
+
+### Application libraries
+
+| Technology | Version | Purpose |
+| --- | --- | --- |
+| React / React DOM | 19.2.7 | Client rendering and components |
+| React Router DOM | 7.18.4 | Navigation and URL query state |
+| Zustand | 5.0.14 | Cart/UI state and persistence middleware |
+| Zod | 4.4.3 | Runtime delivery validation |
+| Tailwind CSS | 4.3.1 | Responsive styling and design tokens |
+| Framer Motion | 12.40.0 | LazyMotion, domAnimation and animation hooks |
+| Lucide React | 1.21.0 | Interface icons |
+| clsx / tailwind-merge | 2.1.1 / 3.6.0 | Conditional classes and utility merging |
+
+### Development and testing tools
+
+| Technology | Version | Purpose |
+| --- | --- | --- |
+| Vite | 8.0.16 | Development server and production bundling |
+| TypeScript | 6.0.3 | Strict component and domain types |
+| @vitejs/plugin-react | 6.0.2 | React build integration |
+| @tailwindcss/vite | 4.3.1 | Tailwind build integration |
+| ESLint / typescript-eslint | 10.5.0 / 8.62.0 | Static code checks |
+| Node.js | 24 recommended; ≥22.12.0 declared | Native test runner and TypeScript stripping |
+| Chrome/Chromium | Installed separately | Browser regression checks through DevTools Protocol |
+
+Recorded checks used Node 24.7.0; the declared minimum was not separately exercised. Browser checks use a project script without an additional testing framework.
+
+## 4. Application Architecture
+
+[App.tsx](src/App.tsx) composes React Router, shared layout, motion configuration and conditional overlays. Home is eager; secondary routes and cart/checkout modules use dynamic imports. Reusable components separate product presentation, cart interactions, checkout steps and shared UI behaviour.
+
+[TypeScript models](src/types/index.ts) define products, variants and cart lines. The [local catalogue](src/data/mockData.ts) supplies product/editorial content. Zustand separates cart data from transient UI visibility. A guarded synchronous `localStorage` adapter persists cart items; delivery details stay in checkout component memory and disappear when the preview unmounts. Zod validates those details before review.
+
+[Architecture diagram](technical/lumen/architecture/lumen-architecture.svg) · [Mermaid source](technical/lumen/architecture/lumen-architecture.mmd)
+
+## 5. Custom Engineering Implementations
+
+### Zustand cart state management
+
+[useCartStore.ts](src/store/useCartStore.ts) identifies each line by product and variant IDs. Additions merge only identical variants; positive integer quantities are capped at stock. Removal and clear operations update canonical items, while selectors derive totals/counts rather than storing redundant calculated values. [useUIStore.ts](src/store/useUIStore.ts) separately owns cart visibility.
+
+### Persistent cart and recovery
+
+The cart store persists only items under `dtc-cart-storage`. Rehydration resolves saved IDs against the current catalogue, refreshes price/stock, merges duplicates and discards invalid or unavailable records.
+
+Guarded reads, writes and removal contain permission/quota failures and corrupt JSON. Pending writes prevent stale stored data from replacing newer unsaved selections. Retry either saves current memory or retries an initially failed read. [CartSidebar.tsx](src/components/cart/CartSidebar.tsx) displays recovery controls and persistence warnings. When storage remains unavailable, cart interactions continue in memory, but reload may lose unsaved changes.
+
+### Product variant logic
+
+[ProductInfo.tsx](src/components/product/ProductInfo.tsx) resolves an exact colour/size combination before addition. Unavailable options are disabled. Colour changes preserve an available size or choose an in-stock fallback; quantities already in the cart count toward the stock limit. Inventory restrictions are frontend consistency rules, not live stock reservations. Product photos are not mapped to every colour.
+
+### Checkout validation
+
+[checkout.ts](src/components/checkout/checkout.ts) defines the Zod delivery schema, inferred `DeliveryData` and shipping calculation. [CheckoutModal.tsx](src/components/checkout/CheckoutModal.tsx) manages delivery, review and completion, maps validation errors to fields and preserves details when editing.
+
+Required values are trimmed/validated; postal code may be empty and country is free text. Standard delivery is $8 through $200 and free strictly above $200; express is $25. These are illustrative rates without tax/carrier APIs. Completion creates no order, processes no payment, sends no email and retains the cart.
+
+[Code evidence guide](technical/lumen/CODE_EVIDENCE_GUIDE.md) provides function-level references, failure cases and verification steps.
+
+## 6. Performance Engineering
+
+- `React.lazy` splits secondary routes and conditional cart/checkout modules.
+- LazyMotion/domAnimation and lightweight `m` components reduce initial motion overhead.
+- Responsive WebPs, resized logos and 160px gallery thumbnails reduce oversized image delivery.
+- Alternate card images mount on interaction; only the active full-size gallery view mounts.
+- Homepage-only hero preload, local font preload/swap and visible-image priorities focus loading on critical content.
+- A viewport-height route loading reserve reduces footer movement while modules load.
+
+The historical local comparison reduced the uncompressed main JavaScript bundle from **420,822 to 375,674 bytes (10.7%)**. [Performance methodology and outcomes](technical/lumen/performance/PERFORMANCE_SUMMARY.md) distinguish privately archived three-run comparisons from the compact public evidence.
+
+| Retained genuine report | Individual Lighthouse performance score |
+| --- | ---: |
+| [Optimised homepage mobile](technical/lumen/performance/lumen-home-mobile-optimized.html) | 95/100 |
+| [Optimised homepage desktop](technical/lumen/performance/lumen-home-desktop-optimized.html) | 100/100 |
+
+The embedded report data confirms these values. Both are individual local production-preview runs from 12 October 2026, using Lighthouse 13.5.0; they are not live Vercel measurements or guaranteed production scores. Historical before/after medians are documented separately in the summary. Individual optimisation savings were not isolated experimentally.
+
+## 7. Project Structure
+
+```text
+lumen/
+├── public/
+│   ├── fonts/                 Local font and licence
+│   └── images/                Brand, editorial and product assets
+├── src/
+│   ├── components/            Cart, checkout, home, layout, product and UI
+│   ├── pages/                 Route views
+│   ├── store/                 Cart persistence and transient UI state
+│   ├── hooks/                 Shared overlay lifecycle
+│   ├── data/                  Local catalogue and editorial fixtures
+│   ├── types/                 Domain models
+│   ├── utils/                 Shared utilities
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+├── scripts/                   Unit and browser regression checks
+├── technical/lumen/
+│   ├── CODE_EVIDENCE_GUIDE.md
+│   ├── architecture/          Mermaid and SVG diagram
+│   └── performance/           Summary and two Lighthouse HTML reports
+├── README.md
+├── .env.example
+├── .nvmrc
+├── package.json
+├── package-lock.json
+└── …                          TypeScript, Vite, ESLint and Vercel configuration
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 8. Installation and Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Use Node 24 as specified by [.nvmrc](.nvmrc); [package.json](package.json) declares Node ≥22.12.0.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+git clone https://github.com/odohigreat/lumen.shop.git
+cd lumen.shop
+npm ci
+npm run dev
 ```
-# lumen.shop
+
+Open the URL printed by Vite. For production mode:
+
+```sh
+npm run build
+npm run preview -- --host 127.0.0.1 --port 4176 --strictPort
+```
+
+No private environment variables or service credentials are required. [.env.example](.env.example) intentionally contains explanatory comments only. Do not place secrets in Vite’s browser-exposed `VITE_*` variables. Chrome is optional for development/unit tests and required only for browser checks.
+
+## 9. Testing and Quality Assurance
+
+| Command | Check |
+| --- | --- |
+| `npm run build` | TypeScript checks and Vite production bundle |
+| `npm run lint` | Configured ESLint rules |
+| `npm test` | Native Node unit tests against production TypeScript modules |
+| `npm run test:browser -- http://127.0.0.1:4176` | Browser checks against a running production preview |
+
+[Cart tests](scripts/test-cart.mjs) and [checkout tests](scripts/test-checkout.mjs) cover stock limits, separate variants, totals, stored-data reconciliation, corrupt records, denied storage, failed writes/retry, delivery validation and shipping thresholds. Recorded verification passed **17 unit tests**.
+
+[Browser checks](scripts/browser-check.mjs) passed **75 assertions**, sampling routes, responsive overflow, images, URL controls, variant fallback, cart/reload, storage recovery, checkout steps and focus handling. Run them in another terminal while the production preview is active. Install Chrome/Chromium or set `CHROME_PATH` to its executable; the runner uses a disposable profile and accepts loopback URLs only.
+
+[useOverlay.ts](src/hooks/useOverlay.ts), [Dialog.tsx](src/components/ui/Dialog.tsx) and [Input.tsx](src/components/ui/Input.tsx) implement focus handling, Escape, background inert state and associated field errors. [ErrorBoundary.tsx](src/components/ui/ErrorBoundary.tsx) handles render/lazy-load failures; storage and event failures need separate handling. Automated samples are not comprehensive accessibility or cross-browser certification.
+
+## 10. Deployment
+
+The project is configured for a Vite SPA on Vercel:
+
+| Setting | Repository configuration |
+| --- | --- |
+| Framework | Vite |
+| Build command | `npm run build` (`tsc -b && vite build`) |
+| Output directory | `dist` |
+| SPA fallback | [vercel.json](vercel.json): `/(.*)` → `/index.html` |
+| Public URL | [lumen-shop-eta.vercel.app](https://lumen-shop-eta.vercel.app/) |
+
+Vercel account-level project, branch, Node and build overrides must be checked before release. The public URL responds, but its deployed commit has not been established against the current local source. Publication/deployment parity is therefore unverified.
+
+## 11. Technical Evidence
+
+- [Code evidence guide](technical/lumen/CODE_EVIDENCE_GUIDE.md): implementation references and reproducible behaviour checks.
+- [Performance summary](technical/lumen/performance/PERFORMANCE_SUMMARY.md): historical results, methodology, public evidence and limitations.
+- [Architecture SVG](technical/lumen/architecture/lumen-architecture.svg) and [Mermaid source](technical/lumen/architecture/lumen-architecture.mmd).
+- [Homepage mobile Lighthouse report](technical/lumen/performance/lumen-home-mobile-optimized.html) and [homepage desktop report](technical/lumen/performance/lumen-home-desktop-optimized.html). Download HTML files and open locally; GitHub normally displays HTML source.
+
+## 12. Known Limitations
+
+No commerce backend, payment processing, database, authentication, server-side validation, order management, email delivery or API form submission is implemented. Prices/stock are fixtures, shipping excludes tax and live carrier rates, and the cart has no cross-tab synchronisation. Large-catalog scalability has not been measured.
+
+Some editorial images depend on Unsplash. Client-rendered metadata does not guarantee server-rendered crawler/social previews. Physical-device, screen-reader, contrast and broader Safari/Firefox checks remain outstanding; some non-cart controls are below the preferred 44px touch target.
+
+Local Lighthouse measurements do not guarantee live performance. The original external case-study wording was not supplied for verification. The owner must confirm personal contribution and permissions for supplied imagery, branding and other assets before publication; the included font licence is [OFL.txt](public/fonts/OFL.txt).

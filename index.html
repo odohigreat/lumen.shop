@@ -2,12 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/images/logo.png" />
+    <link rel="icon" type="image/png" href="/images/brand/logo-64.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LUMEN</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cause&display=swap" rel="stylesheet">
+    <title>Considered essentials | LUMEN</title>
+    <meta
+      name="description"
+      content="Discover Lumen: thoughtfully curated clothing and accessories for a lasting wardrobe."
+    />
+    <link rel="preload" href="/fonts/cause.woff2" as="font" type="font/woff2" crossorigin />
+    <script>
+      // Only the homepage uses this image; other routes should not download it.
+      if (location.pathname === '/') {
+        const hero = document.createElement('link');
+        hero.rel = 'preload';
+        hero.as = 'image';
+        hero.href = '/images/editorial/hero-1600.webp';
+        hero.imageSrcset =
+          '/images/editorial/hero-480.webp 480w, /images/editorial/hero-960.webp 960w, /images/editorial/hero-1600.webp 1600w';
+        hero.imageSizes = '100vw';
+        hero.fetchPriority = 'high';
+        document.head.appendChild(hero);
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

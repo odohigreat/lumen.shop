@@ -1,9 +1,17 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Cause';
+  src: url('/fonts/cause.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme {
-  --font-sans: "Cause", sans-serif;
-  --font-serif: "Cause", serif;
-  
+  --font-sans: 'Cause', sans-serif;
+  --font-serif: 'Cause', serif;
+
   --color-primary: #0a0a0a;
   --color-secondary: #f4f4f5;
   --color-accent: #1e293b;
@@ -43,4 +51,18 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
 }

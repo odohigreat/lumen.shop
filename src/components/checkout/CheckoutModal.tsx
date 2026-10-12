@@ -1,184 +1,167 @@
-import { useState, useEffect } from 'react';
-import { z } from 'zod';
-import { X, Check } from 'lucide-react';
-import { useCartStore } from '../../store/useCartStore';
-import { useUIStore } from '../../store/useUIStore';
+import { useState, type FormEvent } from 'react';
+import {
+  deliverySchema,
+  calculateShipping,
+  type DeliveryData,
+  type ShippingMethod,
+} from './checkout';
+import { useCartStore, selectCartTotal } from '../../store/useCartStore';
+import { Dialog } from '../ui/Dialog';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-
-const checkoutSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().min(2, "Last name is required"),
-  address: z.string().min(5, "Address is required"),
-  city: z.string().min(2, "City is required"),
-  zipCode: z.string().min(5, "Valid zip code required"),
-});
-
-type CheckoutData = z.infer<typeof checkoutSchema>;
-
-export function CheckoutModal() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState<1 | 2 | 3>(1); // 1: Shipping, 2: Payment (Mock), 3: Success
-  const [formData, setFormData] = useState<Partial<CheckoutData>>({});
-  const [errors, setErrors] = useState<Partial<Record<keyof CheckoutData, string>>>({});
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const { cartTotal, clearCart } = useCartStore();
-  const { closeCart } = useUIStore();
-
-  useEffect(() => {
-    const handleOpen = () => {
-      closeCart();
-      setIsOpen(true);
-      setStep(1);
-    };
-    window.addEventListener('open-checkout', handleOpen);
-    return () => window.removeEventListener('open-checkout', handleOpen);
-  }, [closeCart]);
-
-  if (!isOpen) return null;
-
-  const handleNext = () => {
-    try {
-      if (step === 1) {
-        checkoutSchema.parse(formData);
-        setErrors({});
-        setStep(2);
-      }
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        const fieldErrors: any = {};
-        e.issues.forEach((err) => {
-          if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
-        });
-        setErrors(fieldErrors);
-      }
+import { formatCurrency } from '../../utils';
+const fields: { key: keyof DeliveryData; label: string; autoComplete: string }[] = [
+  { key: 'email', label: 'Email', autoComplete: 'email' },
+  { key: 'firstName', label: 'First name', autoComplete: 'given-name' },
+  { key: 'lastName', label: 'Last name', autoComplete: 'family-name' },
+  { key: 'address', label: 'Address', autoComplete: 'street-address' },
+  { key: 'city', label: 'City', autoComplete: 'address-level2' },
+  { key: 'country', label: 'Country', autoComplete: 'country-name' },
+  { key: 'postalCode', label: 'Postal code (optional)', autoComplete: 'postal-code' },
+];
+export function CheckoutModal({ onClose }: { onClose: () => void }) {
+  // Entry ,review, completion. No step creates an order or clears the cart.
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [data, setData] = useState<DeliveryData>({
+    email: '',
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    country: '',
+    postalCode: '',
+  });
+  const [errors, setErrors] = useState<Partial<Record<keyof DeliveryData, string>>>({});
+  const [shipping, setShipping] = useState<ShippingMethod>('standard');
+  const total = useCartStore(selectCartTotal);
+  const items = useCartStore((s) => s.items);
+  const persistenceIssue = useCartStore((s) => s.persistenceIssue);
+  // Illustrative rates only; there is no destination aware shipping/tax service.
+  const shippingCost = calculateShipping(total, shipping);
+  const handleReview = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const result = deliverySchema.safeParse(data);
+    if (!result.success) {
+      // Zod field paths map into the same typed keys used to render the inputs.
+      const next: Partial<Record<keyof DeliveryData, string>> = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (typeof field === 'string' && field in data)
+          next[field as keyof DeliveryData] = issue.message;
+      });
+      setErrors(next);
+      return;
     }
-  };
-
-  const handlePlaceOrder = () => {
-    setIsProcessing(true);
-    // Simulate transaction
-    setTimeout(() => {
-      setIsProcessing(false);
-      clearCart();
-      setStep(3);
-    }, 1500);
+    setErrors({});
+    setData(result.data); // Review displays the trimmed values that passed validation.
+    setStep(2);
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-primary/20 backdrop-blur-sm transition-opacity duration-300" onClick={() => step !== 3 && setIsOpen(false)} />
-
-      <div className="relative w-full max-w-2xl bg-surface shadow-2xl p-8 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-300 ease-out">
-        {step !== 3 && (
-          <button
-            onClick={() => setIsOpen(false)}
-            className="absolute top-6 right-6 p-2 hover:bg-secondary rounded-full transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
-
-        {step === 1 && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-serif font-bold tracking-tight mb-2">Shipping Details</h2>
-              <p className="text-muted">Enter your delivery information</p>
-            </div>
-            <div className="space-y-4">
-              <Input
-                label="Email"
-                type="email"
-                value={formData.email || ''}
-                onChange={e => setFormData({ ...formData, email: e.target.value })}
-                error={errors.email}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="First Name"
-                  value={formData.firstName || ''}
-                  onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-                  error={errors.firstName}
-                />
-                <Input
-                  label="Last Name"
-                  value={formData.lastName || ''}
-                  onChange={e => setFormData({ ...formData, lastName: e.target.value })}
-                  error={errors.lastName}
-                />
-              </div>
-              <Input
-                label="Address"
-                value={formData.address || ''}
-                onChange={e => setFormData({ ...formData, address: e.target.value })}
-                error={errors.address}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="City"
-                  value={formData.city || ''}
-                  onChange={e => setFormData({ ...formData, city: e.target.value })}
-                  error={errors.city}
-                />
-                <Input
-                  label="Zip Code"
-                  value={formData.zipCode || ''}
-                  onChange={e => setFormData({ ...formData, zipCode: e.target.value })}
-                  error={errors.zipCode}
-                />
-              </div>
-            </div>
-            <Button className="w-full h-14" size="lg" onClick={handleNext}>
-              Continue to Payment
-            </Button>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="space-y-8 animate-in slide-in-from-right-4 duration-300">
-            <div>
-              <h2 className="text-2xl font-serif font-bold tracking-tight mb-2">Payment</h2>
-              <p className="text-muted">Secure checkout simulation</p>
-            </div>
-
-            <div className="p-6 border border-border bg-secondary/50 space-y-4">
-              <div className="flex justify-between font-medium">
-                <span>Total to Pay:</span>
-                <span className="font-serif">${cartTotal.toFixed(2)}</span>
-              </div>
-              <p className="text-xs text-muted">
-                This is a sandbox environment. No actual payment will be processed.
-              </p>
-            </div>
-
-            <div className="flex gap-4">
-              <Button variant="outline" className="h-14 px-8" onClick={() => setStep(1)}>
-                Back
-              </Button>
-              <Button className="flex-1 h-14" size="lg" isLoading={isProcessing} onClick={handlePlaceOrder}>
-                Place Order
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="text-center py-12 space-y-6 animate-in zoom-in-95 duration-500">
-            <div className="w-16 h-16 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto mb-6 scale-in">
-              <Check className="w-8 h-8" />
-            </div>
-            <h2 className="text-3xl font-serif font-bold tracking-tight">Order Confirmed</h2>
-            <p className="text-muted max-w-sm mx-auto text-balance">
-              Thank you for your purchase. We'll send a confirmation email with your order details shortly.
+    <Dialog
+      title={
+        step === 1 ? 'Shipping preview' : step === 2 ? 'Review demo checkout' : 'Preview complete'
+      }
+      onClose={onClose}
+    >
+      <p className="text-muted mb-6">
+        Frontend demo. Details stay in this preview; no payment, order, or email is sent. Shipping
+        estimates are illustrative.
+      </p>
+      {!items.length ? (
+        <p>Your cart is empty. Add a piece before previewing checkout.</p>
+      ) : step === 1 ? (
+        <form onSubmit={handleReview} className="space-y-4">
+          {fields.map((field) => (
+            <Input
+              key={field.key}
+              label={field.label}
+              type={field.key === 'email' ? 'email' : 'text'}
+              autoComplete={field.autoComplete}
+              required={field.key !== 'postalCode'}
+              value={data[field.key]}
+              error={errors[field.key]}
+              onChange={(e) => setData({ ...data, [field.key]: e.target.value })}
+            />
+          ))}
+          <label className="block">
+            Shipping estimate
+            <select
+              className="block border border-border p-3 w-full mt-2"
+              value={shipping}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === 'standard' || value === 'express') setShipping(value);
+              }}
+            >
+              <option value="standard">
+                Standard · 3–5 business days · {total > 200 ? 'Free' : '$8'}
+              </option>
+              <option value="express">Express · 1–2 business days · $25</option>
+            </select>
+          </label>
+          <Button type="submit" className="w-full">
+            Review checkout
+          </Button>
+        </form>
+      ) : step === 2 ? (
+        <div className="space-y-6">
+          <div>
+            <h3 className="font-medium mb-2">Delivery details</h3>
+            <p>
+              {data.firstName} {data.lastName}
+              <br />
+              {data.address}
+              <br />
+              {data.city}, {data.country} {data.postalCode}
             </p>
-            <Button className="mt-8 px-12 h-14" onClick={() => setIsOpen(false)}>
-              Continue Shopping
-            </Button>
           </div>
-        )}
-      </div>
-    </div>
+          <ul className="space-y-2">
+            {items.map((item) => (
+              <li key={item.id} className="flex justify-between gap-4">
+                <span>
+                  {item.product.name} · {item.variant.color}/{item.variant.size} × {item.quantity}
+                </span>
+                <span>{formatCurrency(item.product.price * item.quantity)}</span>
+              </li>
+            ))}
+          </ul>
+          <dl className="space-y-3 border-t border-border pt-4">
+            <div className="flex justify-between">
+              <dt>Subtotal</dt>
+              <dd>{formatCurrency(total)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt>Estimated shipping</dt>
+              <dd>{formatCurrency(shippingCost)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt>Taxes / duties</dt>
+              <dd>Not calculated in demo</dd>
+            </div>
+            <div className="flex justify-between font-semibold">
+              <dt>Estimate before taxes</dt>
+              <dd>{formatCurrency(total + shippingCost)}</dd>
+            </div>
+          </dl>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" onClick={() => setStep(1)}>
+              Edit details
+            </Button>
+            <Button onClick={() => setStep(3)}>Complete preview</Button>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <p>
+            No order was placed.{' '}
+            {persistenceIssue
+              ? 'Your cart remains available in this session; browser storage has not been confirmed.'
+              : 'Your cart is saved so you can continue exploring.'}
+          </p>
+          <Button onClick={onClose}>Continue shopping</Button>
+        </div>
+      )}
+    </Dialog>
   );
 }

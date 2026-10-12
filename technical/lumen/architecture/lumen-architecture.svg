@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="950" viewBox="0 0 1280 950" role="img" aria-labelledby="title desc">
+<title id="title">LUMEN frontend architecture</title><desc id="desc">Vercel serves a React and Vite SPA. Router and typed local catalog feed variant selection and Zustand cart. Guarded localStorage persistence reconciles cart records. UI state opens local checkout validated with Zod. Remote images are assets; no commerce backend is connected.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="#475569"/></marker></defs>
+<rect width="1280" height="950" fill="#f8fafc"/>
+<text x="40" y="29" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#0f172a">LUMEN · Client-rendered frontend architecture</text>
+<path d="M630 123 V175" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M910 217 H810" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M630 259 V315" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M360 357 H450" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M450 217 H385 V435 H200 V455" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M630 399 V455" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M810 504 H910" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<path d="M630 539 V620" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M200 539 V620" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M810 662 H910" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M1075 704 V760" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M360 370 H405 V495 H450" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M360 662 H450" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<g id="cartview"><rect x="40" y="620" width="320" height="84" rx="10" fill="#fff" stroke="#94a3b8"/><text x="200" y="651" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">CartSidebar overlay</text><text x="200" y="675" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#0f172a">Dispatches open-checkout event</text></g>
+<g id="hosting"><rect x="450" y="45" width="360" height="78" rx="10" fill="#eff6ff" stroke="#94a3b8"/>
+<text x="630.0" y="76" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Vercel hosting target</text>
+<text x="630.0" y="100" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Static dist + SPA rewrite</text>
+</g>
+<g id="ui"><rect x="450" y="175" width="360" height="84" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="630.0" y="206" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">React UI + React Router</text>
+<text x="630.0" y="230" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Pages, lazy chunks, overlays</text>
+</g>
+<g id="images"><rect x="910" y="175" width="330" height="84" rx="10" fill="#eff6ff" stroke="#94a3b8"/>
+<text x="1075.0" y="206" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Remote editorial images</text>
+<text x="1075.0" y="230" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Unsplash asset requests</text>
+</g>
+<g id="catalog"><rect x="40" y="315" width="320" height="84" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="200.0" y="346" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Typed local catalog</text>
+<text x="200.0" y="370" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Products, variants, fixed stock</text>
+</g>
+<g id="variants"><rect x="450" y="315" width="360" height="84" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="630.0" y="346" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Exact variant selection</text>
+<text x="630.0" y="370" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Color + size → in-stock variant</text>
+</g>
+<g id="uistate"><rect x="40" y="455" width="320" height="84" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="200.0" y="486" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Zustand UI state</text>
+<text x="200.0" y="510" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Cart visibility only</text>
+</g>
+<g id="cart"><rect x="450" y="455" width="360" height="84" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="630.0" y="486" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Zustand cart</text>
+<text x="630.0" y="510" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Variant stock caps; derived totals</text>
+</g>
+<g id="storage"><rect x="910" y="455" width="330" height="98" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="1075.0" y="486" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Browser localStorage</text>
+<text x="1075.0" y="510" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Guarded reads/writes + retry</text>
+<text x="1075.0" y="534" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Catalog reconciliation on restore</text>
+</g>
+<g id="checkout"><rect x="450" y="620" width="360" height="84" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="630.0" y="651" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Local checkout state</text>
+<text x="630.0" y="675" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Delivery → review → completion</text>
+</g>
+<g id="zod"><rect x="910" y="620" width="330" height="84" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="1075.0" y="651" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Zod delivery validation</text>
+<text x="1075.0" y="675" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">Inferred TypeScript form type</text>
+</g>
+<g id="result"><rect x="910" y="760" width="330" height="84" rx="10" fill="#fff" stroke="#94a3b8"/>
+<text x="1075.0" y="791" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Frontend preview only</text>
+<text x="1075.0" y="815" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="normal" fill="#0f172a">No order, payment or email</text>
+</g>
+<text x="40" y="890" font-family="Arial,sans-serif" font-size="18" fill="#475569">Shared interface: useOverlay focus/scroll lifecycle · ErrorBoundary · client-side PageMeta</text>
+<text x="40" y="925" font-family="Arial,sans-serif" font-size="18" fill="#475569">No commerce API, database, payment gateway, authentication or email delivery is connected.</text>
+</svg>

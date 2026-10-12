@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
-import { Button } from '../ui/Button';
+import { m, useScroll, useTransform, useReducedMotion, type Variants } from 'framer-motion';
 import { useRef } from 'react';
 
 const containerVariants: Variants = {
@@ -19,60 +18,69 @@ const itemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: "easeOut" },
+    transition: { duration: 0.8, ease: 'easeOut' },
   },
 };
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start start", "end start"],
+    offset: ['start start', 'end start'],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
     <section ref={ref} className="relative h-[90vh] w-full bg-secondary overflow-hidden">
-      <motion.div style={{ y, opacity }} className="absolute inset-0 w-full h-full">
-        <motion.img 
-          initial={{ scale: 1.1 }}
+      <m.div
+        style={{ y: reduceMotion ? 0 : y, opacity: reduceMotion ? 1 : opacity }}
+        className="absolute inset-0 w-full h-full"
+      >
+        <m.img
+          initial={reduceMotion ? false : { scale: 1.1 }}
           animate={{ scale: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          src="https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2000&auto=format&fit=crop" 
-          alt="Hero Collection" 
+          transition={{ duration: 1.5, ease: 'easeOut' }}
+          src="/images/editorial/hero-1600.webp"
+          srcSet="/images/editorial/hero-480.webp 480w, /images/editorial/hero-960.webp 960w, /images/editorial/hero-1600.webp 1600w"
+          sizes="100vw"
+          alt="Hero Collection"
+          fetchPriority="high"
           className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-primary/30" />
-      </motion.div>
-      
+      </m.div>
+
       <div className="absolute inset-0 flex items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <m.div
             variants={containerVariants}
-            initial="hidden"
+            initial={reduceMotion ? false : 'hidden'}
             animate="visible"
             className="max-w-xl text-surface space-y-6"
           >
-            <motion.div variants={itemVariants} className="overflow-hidden">
+            <m.div variants={itemVariants} className="overflow-hidden">
               <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tighter text-balance leading-[1.1]">
                 The Autumn Edit
               </h1>
-            </motion.div>
-            <motion.div variants={itemVariants}>
+            </m.div>
+            <m.div variants={itemVariants}>
               <p className="text-lg md:text-xl font-medium max-w-md text-surface/90">
-                Discover our latest collection of meticulously crafted essentials for the shifting season.
+                Discover our latest collection of meticulously crafted essentials for the shifting
+                season.
               </p>
-            </motion.div>
-            <motion.div variants={itemVariants} className="pt-4">
-              <Link to="/shop" className="inline-block group">
-                <Button size="lg" className="bg-surface text-primary hover:bg-surface/90 h-14 px-10 text-base transition-transform duration-300 group-hover:scale-105">
-                  Shop the Collection
-                </Button>
+            </m.div>
+            <m.div variants={itemVariants} className="pt-4">
+              <Link
+                to="/shop"
+                className="inline-flex items-center justify-center bg-surface text-primary hover:bg-surface/90 h-14 px-10 text-base focus-visible:outline focus-visible:outline-2"
+              >
+                Shop the Collection
               </Link>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         </div>
       </div>
     </section>
