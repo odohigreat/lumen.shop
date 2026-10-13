@@ -59,7 +59,92 @@ Recorded checks used Node 24.7.0; the declared minimum was not separately exerci
 
 [TypeScript models](src/types/index.ts) define products, variants and cart lines. The [local catalogue](src/data/mockData.ts) supplies product/editorial content. Zustand separates cart data from transient UI visibility. A guarded synchronous `localStorage` adapter persists cart items; delivery details stay in checkout component memory and disappear when the preview unmounts. Zod validates those details before review.
 
-[Architecture diagram](technical/lumen/architecture/lumen-architecture.svg) · [Mermaid source](technical/lumen/architecture/lumen-architecture.mmd)
+```mermaid
+flowchart LR
+  subgraph UI["User / Interface"]
+    direction TB
+    SHOP["Shop page (browser)<br/>/shop · useSearchParams → filtered grid"]
+    PDP["ProductDetail + ProductInfo (browser)<br/>/product/:id · colour and size buttons"]
+    NAV["Navbar (browser)<br/>cart badge · cart button"]
+    CART["CartSidebar (browser)<br/>lines · qty steppers · storage retry control"]
+    CHK["CheckoutModal (browser)<br/>step 1 delivery → 2 review → 3 completion"]
+  end
+  subgraph LOGIC["Application Logic"]
+    direction TB
+    APP["App.tsx (browser)<br/>BrowserRouter · React.lazy routes · Overlays"]
+    EB["ErrorBoundary (browser)<br/>fallback with Reload page button"]
+    VAR["Variant resolver (browser)<br/>selectedVariant · atLimit in ProductInfo"]
+    CHKTS["checkout.ts (browser)<br/>deliverySchema (Zod) · calculateShipping"]
+  end
+  subgraph STATE["State Management"]
+    direction TB
+    CS["useCartStore (browser)<br/>client state: items · addItem · updateQuantity · persistenceIssue"]
+    UIS["useUIStore (browser)<br/>client state: isCartOpen · openCart · closeCart"]
+    SEL["Derived selectors (browser)<br/>selectCartTotal · selectCartCount"]
+  end
+  subgraph API["API / Integrations"]
+    direction TB
+    PERSIST["Zustand persist middleware (browser)<br/>partialize · merge → restoreItems"]
+    ADAPTER["Guarded storage adapter (browser)<br/>getItem / setItem in try/catch · shape check"]
+  end
+  subgraph EXT["External Services / Data"]
+    direction TB
+    LS["localStorage (browser)<br/>key dtc-cart-storage"]
+    CAT["Local catalogue (browser)<br/>mockData.ts · MOCK_PRODUCTS / COLLECTIONS / JOURNAL"]
+    VERCEL["Vercel SPA hosting (server)<br/>vercel.json /(.*) → /index.html"]
+    UNSPLASH["Unsplash images (server)<br/>collection + journal photo URLs"]
+  end
+
+  VERCEL -- "index.html + JS chunks" --> APP
+  APP -- "?q=&category=&sort=" --> SHOP
+  SHOP -- "setParams(next, replace)" --> APP
+  CAT -- "MOCK_PRODUCTS → filter + sort" --> SHOP
+  APP -- "/product/:id" --> PDP
+  CAT -- "MOCK_PRODUCTS.find(id)" --> PDP
+  UNSPLASH -- "editorial photos (Home, Collections, Journal)" --> APP
+  PDP -- "selectedColor + selectedSize" --> VAR
+  CS -- "qty already in cart" --> VAR
+  VAR -- "addItem(product, variant, 1)" --> CS
+  VAR -- "openCart()" --> UIS
+  NAV -- "openCart()" --> UIS
+  UIS -- "isCartOpen → lazy-mount" --> CART
+  CS -- "capped qty (≤ stock)" --> SEL
+  SEL -- "selectCartCount → badge" --> NAV
+  SEL -- "selectCartTotal → subtotal" --> CART
+  SEL -- "selectCartTotal → subtotal" --> CHK
+  CART -- "updateQuantity / removeItem" --> CS
+  CART -- "open-checkout event" --> APP
+  APP -- "closeCart() + lazy-mount CheckoutModal" --> CHK
+  CS -- "items" --> CHK
+  CHK -- "zod.safeParse(delivery) · calculateShipping" --> CHKTS
+  CHKTS -- "trimmed data → review · shipping cost" --> CHK
+  CHKTS -. "field errors" .-> CHK
+  CS -- "partialize → items" --> PERSIST
+  PERSIST -- "persist items → dtc-cart-storage" --> ADAPTER
+  ADAPTER -- "setItem(JSON)" --> LS
+  LS -- "getItem → JSON text" --> ADAPTER
+  ADAPTER -- "shape-checked items" --> PERSIST
+  CAT -- "current price + stock" --> PERSIST
+  PERSIST -- "rehydrate + reconcile vs catalogue" --> CS
+  ADAPTER -. "corrupt JSON discarded / storage throws" .-> CS
+  CS -. "persistenceIssue → warning" .-> CART
+  CART -. "retryPersistence()" .-> CS
+  APP -. "render or lazy-load error" .-> EB
+  EB -. "window.location.reload()" .-> APP
+
+  classDef ui fill:#E8F1FB,stroke:#4A7BB7,color:#1B2B3F
+  classDef logic fill:#EAF6EC,stroke:#4F9A5C,color:#1D3622
+  classDef state fill:#FFF4E0,stroke:#C8912E,color:#3D2C0C
+  classDef api fill:#F1EAF8,stroke:#8463B0,color:#2C1F3D
+  classDef ext fill:#F3F1EF,stroke:#7A706A,color:#2A2522
+  class SHOP,PDP,NAV,CART,CHK ui
+  class APP,EB,VAR,CHKTS logic
+  class CS,UIS,SEL state
+  class PERSIST,ADAPTER api
+  class LS,CAT,VERCEL,UNSPLASH ext
+```
+
+[Architecture document and file-to-diagram map](technical/lumen/architecture/architecture.md) · [PNG export](technical/lumen/architecture/architecture.png)
 
 ## 5. Custom Engineering Implementations
 
